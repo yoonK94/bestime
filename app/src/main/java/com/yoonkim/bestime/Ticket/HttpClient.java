@@ -14,16 +14,17 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class HttpClient {
-    private static String BASE_URL = "http://api.travelpayouts.com/v2/prices/latest?currency=usd&period_type=year&page=1&limit=30&show_to_affiliates=true&sorting=price&one_way=true&trip_class=0&origin=";
-    private static String middle =        "&destination=";
+    private static String BASE_URL = "http://api.travelpayouts.com/v2/prices/latest?currency=usd&page=1&limit=30&show_to_affiliates=true&sorting=price&one_way=true&trip_class=0&beginning_of_period=";
+    private static String middle = "&period_type=month&origin=";
+    private static String middle2 =        "&destination=";
     private static String token = "&token=32d16457c43ca99e02eb8d017aa61bdf";
 
-    public JSONObject getData(String depart, String dest) {
+    public JSONObject getData(String depart, String dest, String date) {
         HttpURLConnection con = null;
         InputStream is = null;
         JSONObject jsonObject;
         try{
-            String article = BASE_URL + depart + middle + dest + token;
+            String article = BASE_URL + date + middle + depart + middle2 + dest + token;
             jsonObject = JSONfunctions.getJSONfromURL(article);
             return jsonObject;
         }

@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -154,6 +155,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     .title(ap.getName() + " Airport"));
             m.setTag(new Integer(0));
         }
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17), 3000, null);
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14), 3000, null);
+
     }
 }
