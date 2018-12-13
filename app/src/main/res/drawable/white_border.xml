@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--from https://github.com/mitchtabian/Google-Maps-Google-Places/blob/f3b88501d533f189fb690d8f671ef60f1c311ccc/app/src/main/res/drawable/white_border.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#fff"/>
+            <corners android:radius="5dp"/>
+        </shape>
+    </item>
+
+</layer-list>

@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">bestime</string>
+    <string name="mapWelcome">Please pick an airport!</string>
+    <string name="instructions">Click on the marker to view IATA code!</string>
+</resources>
