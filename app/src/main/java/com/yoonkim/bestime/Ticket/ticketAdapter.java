@@ -1,25 +1,35 @@
 package com.yoonkim.bestime.Ticket;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.yoonkim.bestime.MainActivity;
 import com.yoonkim.bestime.R;
 import com.yoonkim.bestime.Room.SavedTicket;
+import com.yoonkim.bestime.Room.SavedTicketDao;
 import com.yoonkim.bestime.Room.SavedTicketDatabase;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 public class ticketAdapter extends RecyclerView.Adapter<ticketAdapter.TicketViewHolder>{
     private Context context;
     private List<Schedule> items;
     private ClickListener mClickListener;
+    List<SavedTicket> sc;
 
     public ticketAdapter(List<Schedule> items, Context context) {
         this.items = items;
@@ -35,6 +45,7 @@ public class ticketAdapter extends RecyclerView.Adapter<ticketAdapter.TicketView
         TextView detail;
         TextView saveButton;
         TextView delButton;
+
 
         TicketViewHolder(View v) {
             super(v);
@@ -74,9 +85,9 @@ public class ticketAdapter extends RecyclerView.Adapter<ticketAdapter.TicketView
     @Override
     public void onBindViewHolder(final TicketViewHolder holder, final int position) {
         Schedule item = items.get(position);
-        holder.originTextView.setText(item.getOrigin());
+        holder.originTextView.setText(item.getOrigin().toUpperCase());
         holder.dateTextView.setText("Departure Date\n" + item.getDepart());
-        holder.destinationTextView.setText(item.getDest());
+        holder.destinationTextView.setText(item.getDest().toUpperCase());
         holder.priceTextView.setVisibility(View.INVISIBLE);
         holder.saveButton.setVisibility(View.INVISIBLE);
         holder.delButton.setVisibility(View.INVISIBLE);
@@ -84,12 +95,18 @@ public class ticketAdapter extends RecyclerView.Adapter<ticketAdapter.TicketView
         holder.saveButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 Schedule item = items.get(position);
-                SavedTicket ticket = new SavedTicket();
-                ticket.setOrigin(item.getOrigin());
-                ticket.setDestination(item.getDest());
-                ticket.setPrice(item.getPrice());
-                ticket.setDate(item.getDepart());
-                SavedTicketDatabase.getSavedTicketDatabase(context).savedTicketDao().addSavedTicket(ticket);
+                new DatabaseAsync().execute(null, -3, item.getOrigin(), item.getDest(), item.getDepart(), item.getPrice());
+                if (!(sc.isEmpty())){
+                    showUpdateDialog(sc.get(0), item.getPrice());
+                }
+                else {
+                    SavedTicket ticket = new SavedTicket();
+                    ticket.setOrigin(item.getOrigin());
+                    ticket.setDestination(item.getDest());
+                    ticket.setPrice(item.getPrice());
+                    ticket.setDate(item.getDepart());
+                    SavedTicketDatabase.getSavedTicketDatabase(context).savedTicketDao().addSavedTicket(ticket);
+                }
             }
         });
 
@@ -151,4 +168,111 @@ public class ticketAdapter extends RecyclerView.Adapter<ticketAdapter.TicketView
         void onLongClick(View view, int position);
     }
 
+    private void showUpdateDialog(final SavedTicket st, final int price) {
+
+        LayoutInflater layoutInflater = LayoutInflater.from(context);
+        View view = layoutInflater.inflate(R.layout.update_ticket_dialog, null);
+
+        AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(context);
+        alertDialogBuilderUserInput.setView(view);
+
+        TextView dialog_title = (TextView) view.findViewById(R.id.dialog_title);
+        TextView dialog_body = (TextView) view.findViewById(R.id.dialog_main);
+        TextView dialog_old = (TextView) view.findViewById(R.id.dialog_old);
+        TextView dialog_new = (TextView) view.findViewById(R.id.dialog_new);
+
+        dialog_title.setText("Ticket already exists");
+        dialog_body.setText("The ticket from " + st.getOrigin() + " to " + st.getDestination() + " already exists.\nWould you want to update the ticket?");
+        dialog_old.setText("Original Price = " + st.getPrice());
+        dialog_new.setText("New Pricer = " + price);
+
+        alertDialogBuilderUserInput
+                .setCancelable(false)
+                .setPositiveButton( "Change", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialogBox, int id) {
+
+                    }
+                })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialogBox, int id) {
+                                dialogBox.cancel();
+                            }
+                        });
+
+        final AlertDialog alertDialog = alertDialogBuilderUserInput.create();
+
+        alertDialog.show();
+
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+                st.setPrice(price);
+                SavedTicketDatabase.getSavedTicketDatabase(context).savedTicketDao().updateSavedTicket(st);
+            }
+        });
+    }
+
+    private class DatabaseAsync extends AsyncTask<Object, Void, List<SavedTicket>> {
+
+        // Constructor providing a reference to the views in MainActivity
+        public DatabaseAsync() {
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected List<SavedTicket> doInBackground(Object... params) {
+
+            Boolean shouldUpdate = (Boolean) params[0];
+            int position = (int) params[1];
+            String origin = (String) params[2];
+            String destination = (String) params[3];
+            String date = (String) params[4];
+            int price = (int) params[5];
+
+
+            //check whether to add add or update textBook based on if shouldUpdate is null
+            if (shouldUpdate != null) {
+                //update SavedTicket if shouldUpdate is true
+                if (shouldUpdate) {
+                    SavedTicket ticket = SavedTicketDatabase.getSavedTicketDatabase(context).savedTicketDao().getSavedTickets().get(position);
+                    ticket.setPrice(price);
+                    //update SavedTicket into the database
+                    SavedTicketDatabase.getSavedTicketDatabase(context).savedTicketDao().updateSavedTicket(ticket);
+
+                } else {
+                    //add textBook if shouldUpdate is false
+                    SavedTicket ticket = new SavedTicket();
+                    ticket.setOrigin(origin);
+                    ticket.setDestination(destination);
+                    ticket.setPrice(price);
+                    ticket.setDate(date);
+                    SavedTicketDatabase.getSavedTicketDatabase(context).savedTicketDao().addSavedTicket(ticket);
+                }
+
+            } else { //so no update since shouldUpdate == null
+                //delete all if postion is = -2, really bad, i should fix this
+                if (position == -2)
+                    //delete all textBooks  from database
+                    SavedTicketDatabase.getSavedTicketDatabase(context).savedTicketDao().dropTheTable();
+
+                    //delete textBook
+                else {
+                    return SavedTicketDatabase.getSavedTicketDatabase(context).savedTicketDao().getExistingTickets(origin, destination, date);
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(List<SavedTicket> items) {
+            sc = items;
+        }
+    }
 }

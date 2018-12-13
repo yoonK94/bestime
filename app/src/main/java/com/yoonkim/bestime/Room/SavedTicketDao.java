@@ -15,6 +15,10 @@ public interface SavedTicketDao {
     @Query("SELECT * FROM " + SavedTicket.TABLE_NAME )
     List<SavedTicket> getSavedTickets();
 
+    @Query("SELECT * FROM " + SavedTicket.TABLE_NAME + " WHERE origin = :ori AND  destination = :dest AND date = :depart")
+    List<SavedTicket> getExistingTickets(String ori, String dest, String depart);
+
+
     @Insert
     void addSavedTicket(SavedTicket savedTicket);
 

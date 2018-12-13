@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -42,10 +43,9 @@ import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView show;
-    private Button submit;
-    private Button map;
-    private Button airport;
+    private ImageButton iata;
+    private ImageButton ticket;
+    private ImageButton room;
     private static TextView tv_date;
 
     @Override
@@ -53,35 +53,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        show = (TextView) findViewById(R.id.word);
-        submit = (Button) findViewById(R.id.button);
-        map = (Button)findViewById(R.id.button2);
-        airport = (Button)findViewById(R.id.button3);
+        iata = (ImageButton) findViewById(R.id.iatabutton);
+        ticket = (ImageButton)findViewById(R.id.ticketbutton);
+        room = (ImageButton)findViewById(R.id.savedbutton);
 
-        submit.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                startTask(v);
-            }
-        });
-
-        map.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                showTicketDialog();
-            }
-        });
-        airport.setOnClickListener(new View.OnClickListener(){
+        iata.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 showIATADialog();
             }
         });
-    }
-    public void startTask(View view){
-        JSONTask task = new JSONTask();
-        task.execute("BOS", "NYC", "2018-12-01");
-    }
-    public void startTask2(View view){
-        CityTask task = new CityTask();
-        task.execute("new york");
+        ticket.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                showTicketDialog();
+            }
+        });
+
     }
 
     private class JSONTask extends AsyncTask<String, Void, List<Schedule>> {
@@ -118,11 +104,6 @@ public class MainActivity extends AppCompatActivity {
                 ticket.putExtras(myData);
                 startActivity(ticket);
             }
-
-
-//            mAdapter = new CardViewDataAdapter(synList);
-//            mRecyclerView.setAdapter(mAdapter);
-//            mAdapter.notifyDataSetChanged();
 
         }
     }
@@ -178,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean ready = false;
+
                 // Show toast message when no text is entered
                 if (TextUtils.isEmpty(edt_origin.getText().toString())) {
                     Toast.makeText(MainActivity.this, "Please enter the departing city", Toast.LENGTH_SHORT).show();
@@ -294,7 +275,6 @@ public class MainActivity extends AppCompatActivity {
 
     public static class MonthPickerListener implements DatePickerDialog.OnDateSetListener {
 
-
         public void onDateSet(DatePicker view, int year, int month, int day) {
             String monthVal, dayVal = "" + day;
             if ((month) < 10) {
@@ -302,7 +282,6 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 monthVal = "" + month;
             }
-
 
             tv_date.setText(year + "-" +  monthVal + "-01");
 
