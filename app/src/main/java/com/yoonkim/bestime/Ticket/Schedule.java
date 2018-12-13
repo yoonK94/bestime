@@ -4,21 +4,10 @@ import java.io.Serializable;
 
 public class Schedule implements Serializable {
 
-//    private String date;
     private String origin;
     private String dest;
     private int price;
-//    private String airline;
-//    private int flight_number;
     private String depart;
-//    private String back;
-
-//    public String getDate(){
-//        return date;
-//    }
-//    public void setDate(String date){
-//        this.date = date;
-//    }
 
     public String getOrigin(){
         return origin;
@@ -41,33 +30,12 @@ public class Schedule implements Serializable {
         this.price = price;
     }
 
-//    public String getAirline(){
-//        return airline;
-//    }
-//    public void setAirline(String airline){
-//        this.airline = airline;
-//    }
-//
-//    public int getFlight_number(){
-//        return flight_number;
-//    }
-//    public void setFlight_number(int flight_number){
-//        this.flight_number = flight_number;
-//    }
-
     public String getDepart(){
         return depart;
     }
     public void setDepart(String depart){
         this.depart = depart;
     }
-
-//    public String getBack(){
-//        return back;
-//    }
-//    public void setBack(String back){
-//        this.back = back;
-//    }
 
 
 }

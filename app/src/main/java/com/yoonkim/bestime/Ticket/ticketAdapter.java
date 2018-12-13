@@ -11,6 +11,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.yoonkim.bestime.R;
+import com.yoonkim.bestime.Room.SavedTicket;
+import com.yoonkim.bestime.Room.SavedTicketDatabase;
 
 import java.util.List;
 
@@ -78,6 +80,18 @@ public class ticketAdapter extends RecyclerView.Adapter<ticketAdapter.TicketView
         holder.priceTextView.setVisibility(View.INVISIBLE);
         holder.saveButton.setVisibility(View.INVISIBLE);
         holder.delButton.setVisibility(View.INVISIBLE);
+
+        holder.saveButton.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                Schedule item = items.get(position);
+                SavedTicket ticket = new SavedTicket();
+                ticket.setOrigin(item.getOrigin());
+                ticket.setDestination(item.getDest());
+                ticket.setPrice(item.getPrice());
+                ticket.setDate(item.getDepart());
+                SavedTicketDatabase.getSavedTicketDatabase(context).savedTicketDao().addSavedTicket(ticket);
+            }
+        });
 
         holder.detail.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
