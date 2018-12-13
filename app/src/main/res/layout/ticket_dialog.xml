@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:fontFamily="sans-serif-medium"
-        android:textColor="@color/colorAccent"
+        android:textColor="@color/colorPrimary"
         android:textSize="22sp"
         android:textStyle="normal" />
 
@@ -64,8 +64,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:background="@color/colorAccent"
-            android:text="Pick A Date"
+            android:background="@color/colorPrimary"
+            android:text="Departing\nmonth"
             android:textColor="@android:color/white"
             android:textStyle="bold" />
 

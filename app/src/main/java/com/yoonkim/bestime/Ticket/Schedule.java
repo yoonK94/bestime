@@ -1,8 +1,10 @@
 package com.yoonkim.bestime.Ticket;
 
-public class Schedule {
+import java.io.Serializable;
 
-    private String date;
+public class Schedule implements Serializable {
+
+//    private String date;
     private String origin;
     private String dest;
     private int price;
@@ -11,12 +13,12 @@ public class Schedule {
     private String depart;
 //    private String back;
 
-    public String getDate(){
-        return date;
-    }
-    public void setDate(String date){
-        this.date = date;
-    }
+//    public String getDate(){
+//        return date;
+//    }
+//    public void setDate(String date){
+//        this.date = date;
+//    }
 
     public String getOrigin(){
         return origin;

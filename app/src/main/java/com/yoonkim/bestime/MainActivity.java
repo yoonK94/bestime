@@ -28,6 +28,7 @@ import com.yoonkim.bestime.Ticket.HttpClient;
 import com.yoonkim.bestime.Ticket.JSONParser;
 import com.yoonkim.bestime.Ticket.MonthYearPickerDialog;
 import com.yoonkim.bestime.Ticket.Schedule;
+import com.yoonkim.bestime.Ticket.viewTicket;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
     private Button submit;
     private Button map;
     private Button airport;
-    private List<Airport> airportList;
     private static TextView tv_date;
 
     @Override
@@ -108,13 +108,15 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(List<Schedule> scList){
             super.onPostExecute(scList);
             // create an Object for Adapter
-            if(scList.isEmpty()){show.setText("yay");}
+            if(scList.isEmpty()){
+                Toast.makeText(MainActivity.this, "Sorry, I could not find any ticket based on your search", Toast.LENGTH_SHORT).show();
+            }
             else{
-                String s = "";
-                for(int i = 0; i < scList.size();i++){
-                    s += scList.get(i).getDepart() + "\n";
-                }
-                show.setText(s);
+                Intent ticket =new Intent (MainActivity.this, viewTicket.class);
+                Bundle myData = new Bundle();
+                myData.putSerializable("tickets", (ArrayList<Schedule>)scList);
+                ticket.putExtras(myData);
+                startActivity(ticket);
             }
 
 
@@ -184,6 +186,9 @@ public class MainActivity extends AppCompatActivity {
                 else if (TextUtils.isEmpty(edt_destination.getText().toString())) {
                     Toast.makeText(MainActivity.this, "Please enter the arriving city", Toast.LENGTH_SHORT).show();
                 }
+                else if (TextUtils.isEmpty(tv_date.getText().toString())) {
+                    Toast.makeText(MainActivity.this, "Please select the departing month", Toast.LENGTH_SHORT).show();
+                }
                 else {
                     alertDialog.dismiss();
                     JSONTask task = new JSONTask();
@@ -218,15 +223,15 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(List<Airport> apList){
             super.onPostExecute(apList);
-            airportList = apList;
-            // create an Object for Adapter
 
-            if(airportList.isEmpty()){show.setText("yay");}
+            if(apList.isEmpty()){
+                Toast.makeText(MainActivity.this, "Sorry, I could not find a city based on your search", Toast.LENGTH_SHORT).show();
+            }
             else{
                 Intent map =new Intent (MainActivity.this, MapActivity.class);
                 Bundle myData = new Bundle();
 
-                myData.putSerializable("cities", (ArrayList<Airport>)airportList);
+                myData.putSerializable("cities", (ArrayList<Airport>)apList);
                 map.putExtras(myData);
                 startActivity(map);
             }
