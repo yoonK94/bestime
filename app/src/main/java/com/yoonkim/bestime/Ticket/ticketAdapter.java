@@ -23,13 +23,13 @@ import com.yoonkim.bestime.Room.SavedTicketDao;
 import com.yoonkim.bestime.Room.SavedTicketDatabase;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ticketAdapter extends RecyclerView.Adapter<ticketAdapter.TicketViewHolder>{
     private Context context;
     private List<Schedule> items;
     private ClickListener mClickListener;
-    List<SavedTicket> sc;
 
     public ticketAdapter(List<Schedule> items, Context context) {
         this.items = items;
@@ -95,18 +95,8 @@ public class ticketAdapter extends RecyclerView.Adapter<ticketAdapter.TicketView
         holder.saveButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 Schedule item = items.get(position);
-                new DatabaseAsync().execute(null, -3, item.getOrigin(), item.getDest(), item.getDepart(), item.getPrice());
-                if (!(sc.isEmpty())){
-                    showUpdateDialog(sc.get(0), item.getPrice());
-                }
-                else {
-                    SavedTicket ticket = new SavedTicket();
-                    ticket.setOrigin(item.getOrigin());
-                    ticket.setDestination(item.getDest());
-                    ticket.setPrice(item.getPrice());
-                    ticket.setDate(item.getDepart());
-                    SavedTicketDatabase.getSavedTicketDatabase(context).savedTicketDao().addSavedTicket(ticket);
-                }
+                new DatabaseAsync().execute(true, -3, item.getOrigin(), item.getDest(), item.getDepart(), item.getPrice());
+                Toast.makeText(context, "Please wait", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -169,7 +159,6 @@ public class ticketAdapter extends RecyclerView.Adapter<ticketAdapter.TicketView
     }
 
     private void showUpdateDialog(final SavedTicket st, final int price) {
-
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         View view = layoutInflater.inflate(R.layout.update_ticket_dialog, null);
 
@@ -184,7 +173,7 @@ public class ticketAdapter extends RecyclerView.Adapter<ticketAdapter.TicketView
         dialog_title.setText("Ticket already exists");
         dialog_body.setText("The ticket from " + st.getOrigin() + " to " + st.getDestination() + " already exists.\nWould you want to update the ticket?");
         dialog_old.setText("Original Price = " + st.getPrice());
-        dialog_new.setText("New Pricer = " + price);
+        dialog_new.setText("New Price = " + price);
 
         alertDialogBuilderUserInput
                 .setCancelable(false)
@@ -208,18 +197,12 @@ public class ticketAdapter extends RecyclerView.Adapter<ticketAdapter.TicketView
             @Override
             public void onClick(View v) {
                 alertDialog.dismiss();
-                st.setPrice(price);
-                SavedTicketDatabase.getSavedTicketDatabase(context).savedTicketDao().updateSavedTicket(st);
+                new DatabaseAsync().execute(false, st.getId(), null, null, null, price);
             }
         });
     }
 
-    private class DatabaseAsync extends AsyncTask<Object, Void, List<SavedTicket>> {
-
-        // Constructor providing a reference to the views in MainActivity
-        public DatabaseAsync() {
-
-        }
+    private class DatabaseAsync extends AsyncTask<Object, Void, ForAlert> {
 
         @Override
         protected void onPreExecute() {
@@ -227,27 +210,24 @@ public class ticketAdapter extends RecyclerView.Adapter<ticketAdapter.TicketView
         }
 
         @Override
-        protected List<SavedTicket> doInBackground(Object... params) {
-
-            Boolean shouldUpdate = (Boolean) params[0];
+        protected ForAlert doInBackground(Object... params) {
+            Boolean shouldSearch = (Boolean) params[0];
             int position = (int) params[1];
             String origin = (String) params[2];
             String destination = (String) params[3];
             String date = (String) params[4];
             int price = (int) params[5];
 
-
-            //check whether to add add or update textBook based on if shouldUpdate is null
-            if (shouldUpdate != null) {
-                //update SavedTicket if shouldUpdate is true
-                if (shouldUpdate) {
-                    SavedTicket ticket = SavedTicketDatabase.getSavedTicketDatabase(context).savedTicketDao().getSavedTickets().get(position);
-                    ticket.setPrice(price);
-                    //update SavedTicket into the database
-                    SavedTicketDatabase.getSavedTicketDatabase(context).savedTicketDao().updateSavedTicket(ticket);
-
-                } else {
-                    //add textBook if shouldUpdate is false
+            //check whether to search a SavedTicket based on if shouldSearch is true
+            if(shouldSearch){
+                List<SavedTicket> st = SavedTicketDatabase.getSavedTicketDatabase(context).savedTicketDao().getExistingTickets(origin, destination, date);
+                if(!(st.isEmpty())){
+                    ForAlert fa = new ForAlert();
+                    fa.setSc(st.get(0));
+                    fa.setPrice(price);
+                    return fa;
+                }
+                else{
                     SavedTicket ticket = new SavedTicket();
                     ticket.setOrigin(origin);
                     ticket.setDestination(destination);
@@ -255,24 +235,24 @@ public class ticketAdapter extends RecyclerView.Adapter<ticketAdapter.TicketView
                     ticket.setDate(date);
                     SavedTicketDatabase.getSavedTicketDatabase(context).savedTicketDao().addSavedTicket(ticket);
                 }
-
-            } else { //so no update since shouldUpdate == null
-                //delete all if postion is = -2, really bad, i should fix this
-                if (position == -2)
-                    //delete all textBooks  from database
-                    SavedTicketDatabase.getSavedTicketDatabase(context).savedTicketDao().dropTheTable();
-
-                    //delete textBook
-                else {
-                    return SavedTicketDatabase.getSavedTicketDatabase(context).savedTicketDao().getExistingTickets(origin, destination, date);
-                }
+            }
+            //savedSearch == false indicates that existing ticket should be updated
+            else {
+                //auto increment starts from index 1 not zero
+                SavedTicket ticket = SavedTicketDatabase.getSavedTicketDatabase(context).savedTicketDao().getSavedTickets().get(position - 1);
+                ticket.setPrice(price);
+                SavedTicketDatabase.getSavedTicketDatabase(context).savedTicketDao().updateSavedTicket(ticket);
             }
             return null;
         }
 
         @Override
-        protected void onPostExecute(List<SavedTicket> items) {
-            sc = items;
+        protected void onPostExecute(ForAlert toConfirm) {
+            super.onPostExecute(toConfirm);
+            //Since a ticket with same origin, destination, and departure date exists, check again if the user wants to update
+            if(toConfirm != null){
+                showUpdateDialog(toConfirm.getSc(), toConfirm.getPrice());
+            }
         }
     }
 }

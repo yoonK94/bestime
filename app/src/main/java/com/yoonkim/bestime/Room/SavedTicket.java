@@ -46,7 +46,7 @@ public class SavedTicket {
     }
 
     public String getDestination(){return  destination;}
-    public void setDestination(String origin) {
+    public void setDestination(String destination) {
         this.destination = destination;
     }
 

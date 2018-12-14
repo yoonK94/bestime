@@ -69,47 +69,107 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+    /*
+        A dialog to search desired city
+     */
+    private void showIATADialog() {
 
-    private class JSONTask extends AsyncTask<String, Void, List<Schedule>> {
+        LayoutInflater layoutInflater = LayoutInflater.from(getApplicationContext());
+        View view = layoutInflater.inflate(R.layout.iata_dialog, null);
+
+        AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(this);
+        alertDialogBuilderUserInput.setView(view);
+
+        TextView dialog_title = (TextView) view.findViewById(R.id.dialog_title);
+
+        final EditText edt_title = (EditText) view.findViewById(R.id.edt_title);
+
+
+        dialog_title.setText("IATA Search");
+
+
+        alertDialogBuilderUserInput
+                .setCancelable(false)
+                .setPositiveButton( "Search!", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialogBox, int id) {
+
+                    }
+                })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialogBox, int id) {
+                                dialogBox.cancel();
+                            }
+                        });
+
+        final AlertDialog alertDialog = alertDialogBuilderUserInput.create();
+
+        alertDialog.show();
+
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // Show toast message when no text is entered
+                if (TextUtils.isEmpty(edt_title.getText().toString())) {
+                    Toast.makeText(MainActivity.this, "Please enter the name of a city", Toast.LENGTH_SHORT).show();
+                }
+
+                else {
+                    alertDialog.dismiss();
+                    CityTask task = new CityTask();
+                    task.execute(edt_title.getText().toString());
+                }
+
+            }
+        });
+    }
+
+    /*
+        AsyncTask to lookup nearby airports of the city from aviation-edge.com and show in Google Maps
+     */
+
+    private class CityTask extends AsyncTask<String, Void, List<Airport>> {
         @Override
-        protected List<Schedule> doInBackground(String... params) {
-            List<Schedule> scList = new ArrayList<>();
+        protected List<Airport> doInBackground(String... params) {
+            List<Airport> apList = new ArrayList<>();
             JSONObject jobj;
             String origin = params[0];
-            String destination = params[1];
-            String date = params[2];
-            jobj = ((new HttpClient()).getData(origin, destination, date));
+            jobj = ((new CityHttpClient()).getData(origin));
             try {
-                scList = JSONParser.getSchedule(jobj, origin, destination);
+                apList = CityJSONParser.getAirport(jobj);
             }
             catch (JSONException e){
                 e.printStackTrace();
             }
 
-            return scList;
+            return apList;
 
         }
 
         @Override
-        protected void onPostExecute(List<Schedule> scList){
-            super.onPostExecute(scList);
-            // create an Object for Adapter
-            if(scList.isEmpty()){
-                Toast.makeText(MainActivity.this, "Sorry, I could not find any ticket based on your search", Toast.LENGTH_SHORT).show();
+        protected void onPostExecute(List<Airport> apList){
+            super.onPostExecute(apList);
+
+            if(apList.isEmpty()){
+                Toast.makeText(MainActivity.this, "Sorry, I could not find a city based on your search", Toast.LENGTH_SHORT).show();
             }
             else{
-                Intent ticket =new Intent (MainActivity.this, viewTicket.class);
+                Intent map =new Intent (MainActivity.this, MapActivity.class);
                 Bundle myData = new Bundle();
-                myData.putSerializable("tickets", (ArrayList<Schedule>)scList);
-                ticket.putExtras(myData);
-                startActivity(ticket);
-            }
 
+                myData.putSerializable("cities", (ArrayList<Airport>)apList);
+                map.putExtras(myData);
+                startActivity(map);
+            }
         }
     }
 
-    private void showTicketDialog() {
+    /*
+        A dialog to pick the origin, destination, and desired departure month
+     */
 
+    private void showTicketDialog() {
         LayoutInflater layoutInflater = LayoutInflater.from(getApplicationContext());
         View view = layoutInflater.inflate(R.layout.ticket_dialog, null);
 
@@ -179,100 +239,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-
     }
-
-    private class CityTask extends AsyncTask<String, Void, List<Airport>> {
-        @Override
-        protected List<Airport> doInBackground(String... params) {
-            List<Airport> apList = new ArrayList<>();
-            JSONObject jobj;
-            String origin = params[0];
-            jobj = ((new CityHttpClient()).getData(origin));
-            try {
-                apList = CityJSONParser.getAirport(jobj);
-            }
-            catch (JSONException e){
-                e.printStackTrace();
-            }
-
-            return apList;
-
-        }
-
-        @Override
-        protected void onPostExecute(List<Airport> apList){
-            super.onPostExecute(apList);
-
-            if(apList.isEmpty()){
-                Toast.makeText(MainActivity.this, "Sorry, I could not find a city based on your search", Toast.LENGTH_SHORT).show();
-            }
-            else{
-                Intent map =new Intent (MainActivity.this, MapActivity.class);
-                Bundle myData = new Bundle();
-
-                myData.putSerializable("cities", (ArrayList<Airport>)apList);
-                map.putExtras(myData);
-                startActivity(map);
-            }
-        }
-    }
-
-    private void showIATADialog() {
-
-        LayoutInflater layoutInflater = LayoutInflater.from(getApplicationContext());
-        View view = layoutInflater.inflate(R.layout.iata_dialog, null);
-
-        AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(this);
-        alertDialogBuilderUserInput.setView(view);
-
-        TextView dialog_title = (TextView) view.findViewById(R.id.dialog_title);
-
-        final EditText edt_title = (EditText) view.findViewById(R.id.edt_title);
-
-
-        dialog_title.setText("IATA Search");
-
-
-        alertDialogBuilderUserInput
-                .setCancelable(false)
-                .setPositiveButton( "Search!", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialogBox, int id) {
-
-                    }
-                })
-                .setNegativeButton("Cancel",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialogBox, int id) {
-                                dialogBox.cancel();
-                            }
-                        });
-
-        final AlertDialog alertDialog = alertDialogBuilderUserInput.create();
-
-        alertDialog.show();
-
-        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                // Show toast message when no text is entered
-                if (TextUtils.isEmpty(edt_title.getText().toString())) {
-                    Toast.makeText(MainActivity.this, "Please enter the name of a city", Toast.LENGTH_SHORT).show();
-                }
-
-                else {
-                    alertDialog.dismiss();
-                    CityTask task = new CityTask();
-                    task.execute(edt_title.getText().toString());
-                }
-
-            }
-        });
-    }
-
-
     public static class MonthPickerListener implements DatePickerDialog.OnDateSetListener {
 
         public void onDateSet(DatePicker view, int year, int month, int day) {
@@ -294,6 +261,44 @@ public class MainActivity extends AppCompatActivity {
         newFragment.show(getSupportFragmentManager(), "MonthYearPickerDialog");
     }
 
+    /*
+        AsyncTask to search the purchased tickets from travelpayouts.com within the recent 48 hours
+     */
+
+    private class JSONTask extends AsyncTask<String, Void, List<Schedule>> {
+        @Override
+        protected List<Schedule> doInBackground(String... params) {
+            List<Schedule> scList = new ArrayList<>();
+            JSONObject jobj;
+            String origin = params[0];
+            String destination = params[1];
+            String date = params[2];
+            jobj = ((new HttpClient()).getData(origin, destination, date));
+            try {
+                scList = JSONParser.getSchedule(jobj, origin, destination);
+            }
+            catch (JSONException e){
+                e.printStackTrace();
+            }
+            return scList;
+        }
+
+        @Override
+        protected void onPostExecute(List<Schedule> scList){
+            super.onPostExecute(scList);
+            // create an Object for Adapter
+            if(scList.isEmpty()){
+                Toast.makeText(MainActivity.this, "Sorry, I could not find any ticket based on your search", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                Intent ticket =new Intent (MainActivity.this, viewTicket.class);
+                Bundle myData = new Bundle();
+                myData.putSerializable("tickets", (ArrayList<Schedule>)scList);
+                ticket.putExtras(myData);
+                startActivity(ticket);
+            }
+        }
+    }
 }
 
 
