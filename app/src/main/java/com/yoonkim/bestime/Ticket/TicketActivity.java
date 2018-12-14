@@ -14,7 +14,7 @@ import com.yoonkim.bestime.R;
 
 import java.util.List;
 
-public class viewTicket extends AppCompatActivity {
+public class TicketActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     ticketAdapter adapter;
     List<Schedule> scList;
@@ -35,9 +35,5 @@ public class viewTicket extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(adapter);
-
-
-
-
     }
 }

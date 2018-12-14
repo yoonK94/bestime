@@ -36,7 +36,7 @@
             android:parentActivityName=".MainActivity"> <!-- needed for up link to parent activity -->
         </activity>
         <activity
-            android:name=".Ticket.viewTicket"
+            android:name=".Ticket.TicketActivity"
             android:parentActivityName=".MainActivity"> <!-- needed for up link to parent activity -->
         </activity>
         <!-- the following MUST be in application, not activity -->

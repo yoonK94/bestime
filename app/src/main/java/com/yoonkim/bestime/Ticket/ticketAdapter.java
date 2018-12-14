@@ -63,7 +63,6 @@ public class ticketAdapter extends RecyclerView.Adapter<ticketAdapter.TicketView
 
         @Override
         public void onClick(View view) {
-
             if (mClickListener != null) mClickListener.onClick(view, getAdapterPosition());
         }
 

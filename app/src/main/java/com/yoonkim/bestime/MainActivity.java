@@ -2,22 +2,22 @@ package com.yoonkim.bestime;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,21 +25,22 @@ import com.yoonkim.bestime.City.Airport;
 import com.yoonkim.bestime.City.CityHttpClient;
 import com.yoonkim.bestime.City.CityJSONParser;
 import com.yoonkim.bestime.Map.MapActivity;
+import com.yoonkim.bestime.Room.SavedTicket;
+import com.yoonkim.bestime.Room.SavedTicketDatabase;
+import com.yoonkim.bestime.Room.databaseAdapter;
+import com.yoonkim.bestime.Ticket.ForAlert;
 import com.yoonkim.bestime.Ticket.HttpClient;
 import com.yoonkim.bestime.Ticket.JSONParser;
 import com.yoonkim.bestime.Ticket.MonthYearPickerDialog;
 import com.yoonkim.bestime.Ticket.Schedule;
-import com.yoonkim.bestime.Ticket.viewTicket;
+import com.yoonkim.bestime.Ticket.TicketActivity;
+import com.yoonkim.bestime.Ticket.ticketAdapter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton ticket;
     private ImageButton room;
     private static TextView tv_date;
+    private List<SavedTicket> stList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +67,12 @@ public class MainActivity extends AppCompatActivity {
         ticket.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 showTicketDialog();
+            }
+        });
+        room.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatabaseAsync().execute();
             }
         });
 
@@ -291,7 +299,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Sorry, I could not find any ticket based on your search", Toast.LENGTH_SHORT).show();
             }
             else{
-                Intent ticket =new Intent (MainActivity.this, viewTicket.class);
+                Intent ticket =new Intent (MainActivity.this, TicketActivity.class);
                 Bundle myData = new Bundle();
                 myData.putSerializable("tickets", (ArrayList<Schedule>)scList);
                 ticket.putExtras(myData);
@@ -299,6 +307,64 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    private void showDatabaseDialog() {
+
+        LayoutInflater layoutInflater = LayoutInflater.from(getApplicationContext());
+        View view = layoutInflater.inflate(R.layout.database_dialog, null);
+
+        TextView dialog_title = (TextView) view.findViewById(R.id.dialog_title);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_list_events);
+
+        AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(this);
+        alertDialogBuilderUserInput.setView(view);
+        databaseAdapter adapter = new databaseAdapter(stList, getApplicationContext());
+
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
+        recyclerView.setAdapter(adapter);
+
+        dialog_title.setText("Saved Tickets");
+
+
+        alertDialogBuilderUserInput
+                .setCancelable(false)
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialogBox, int id) {
+                                dialogBox.cancel();
+                            }
+                        });
+
+        final AlertDialog alertDialog = alertDialogBuilderUserInput.create();
+
+
+
+        alertDialog.show();
+    }
+
+    private class DatabaseAsync extends AsyncTask<Object, Void, List<SavedTicket>> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected List<SavedTicket> doInBackground(Object... params) {
+            List<SavedTicket> tickets;
+            tickets = SavedTicketDatabase.getSavedTicketDatabase(MainActivity.this).savedTicketDao().getSavedTickets();
+            return tickets;
+        }
+
+        @Override
+        protected void onPostExecute(List<SavedTicket> tickets) {
+            super.onPostExecute(tickets);
+            stList = tickets;
+            showDatabaseDialog();
+        }
+    }
+
 }
 
 
