@@ -1,29 +1,20 @@
 package com.yoonkim.bestime.Ticket;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
-import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.yoonkim.bestime.MainActivity;
 import com.yoonkim.bestime.R;
 import com.yoonkim.bestime.Room.SavedTicket;
-import com.yoonkim.bestime.Room.SavedTicketDao;
 import com.yoonkim.bestime.Room.SavedTicketDatabase;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ticketAdapter extends RecyclerView.Adapter<ticketAdapter.TicketViewHolder>{
@@ -159,7 +150,7 @@ public class ticketAdapter extends RecyclerView.Adapter<ticketAdapter.TicketView
 
     private void showUpdateDialog(final SavedTicket st, final int price) {
         LayoutInflater layoutInflater = LayoutInflater.from(context);
-        View view = layoutInflater.inflate(R.layout.update_ticket_dialog, null);
+        View view = layoutInflater.inflate(R.layout.dialog_update_ticket, null);
 
         AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(context);
         alertDialogBuilderUserInput.setView(view);

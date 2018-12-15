@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements OnDbClickListener
     private ImageButton room;
     private static TextView tv_date;
     private List<SavedTicket> stList;
+    private FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +62,15 @@ public class MainActivity extends AppCompatActivity implements OnDbClickListener
         iata = (ImageButton) findViewById(R.id.iatabutton);
         ticket = (ImageButton)findViewById(R.id.ticketbutton);
         room = (ImageButton)findViewById(R.id.savedbutton);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
 
+        fab.setImageResource(R.drawable.instructionbutton30dp);
+        fab.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                showInstructionDialog();
+            }
+        });
         iata.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 showIATADialog();
@@ -79,13 +89,42 @@ public class MainActivity extends AppCompatActivity implements OnDbClickListener
         });
 
     }
+
+    private void showInstructionDialog() {
+
+        LayoutInflater layoutInflater = LayoutInflater.from(getApplicationContext());
+        View view = layoutInflater.inflate(R.layout.dialog_instruction, null);
+
+        AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(this);
+        alertDialogBuilderUserInput.setView(view);
+
+        TextView dialog_title = (TextView) view.findViewById(R.id.dialog_title);
+
+        TextView dialog_body = (TextView) view.findViewById(R.id.dialog_main);
+
+        dialog_title.setText("  Welcome");
+
+        alertDialogBuilderUserInput
+                .setCancelable(false)
+                .setNegativeButton("Got it",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialogBox, int id) {
+                                dialogBox.cancel();
+                            }
+                        });
+
+        final AlertDialog alertDialog = alertDialogBuilderUserInput.create();
+
+        alertDialog.show();
+
+    }
     /*
         A dialog to search desired city
      */
     private void showIATADialog() {
 
         LayoutInflater layoutInflater = LayoutInflater.from(getApplicationContext());
-        View view = layoutInflater.inflate(R.layout.iata_dialog, null);
+        View view = layoutInflater.inflate(R.layout.dialog_iata, null);
 
         AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(this);
         alertDialogBuilderUserInput.setView(view);
@@ -175,13 +214,15 @@ public class MainActivity extends AppCompatActivity implements OnDbClickListener
         }
     }
 
+
+
     /*
         A dialog to pick the origin, destination, and desired departure month
      */
 
     private void showTicketDialog() {
         LayoutInflater layoutInflater = LayoutInflater.from(getApplicationContext());
-        View view = layoutInflater.inflate(R.layout.ticket_dialog, null);
+        View view = layoutInflater.inflate(R.layout.dialog_ticket, null);
 
         AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(this);
         alertDialogBuilderUserInput.setView(view);
@@ -313,7 +354,7 @@ public class MainActivity extends AppCompatActivity implements OnDbClickListener
     private void showDatabaseDialog(List<ticketGroup> tgList) {
 
         LayoutInflater layoutInflater = LayoutInflater.from(getApplicationContext());
-        View view = layoutInflater.inflate(R.layout.database_dialog, null);
+        View view = layoutInflater.inflate(R.layout.dialog_database, null);
 
         TextView dialog_title = (TextView) view.findViewById(R.id.dialog_title);
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_list_events);

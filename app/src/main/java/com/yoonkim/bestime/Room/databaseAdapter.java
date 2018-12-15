@@ -45,7 +45,6 @@ public class databaseAdapter extends RecyclerView.Adapter<databaseAdapter.Databa
         TextView originTextView;
         TextView destinationTextView;
         TextView show;
-        TextView prompt;
         TextView manage;
 
         DatabaseViewHolder(View v) {
@@ -53,7 +52,6 @@ public class databaseAdapter extends RecyclerView.Adapter<databaseAdapter.Databa
             originTextView = (TextView) v.findViewById(R.id.tv_origin);
             destinationTextView = (TextView) v.findViewById(R.id.tv_dest);
             show = (TextView) v.findViewById(R.id.show);
-            prompt = (TextView) v.findViewById(R.id.tv_prompt);
             manage = (TextView) v.findViewById(R.id.manage);
 
             v.setOnClickListener(this);
@@ -86,7 +84,6 @@ public class databaseAdapter extends RecyclerView.Adapter<databaseAdapter.Databa
         holder.originTextView.setText(item.getOrigin().toUpperCase());
         holder.destinationTextView.setText(item.getDestination().toUpperCase());
         holder.show.setText(" Show ");
-        holder.prompt.setText("");
         holder.manage.setText(" Manage ");
 
 

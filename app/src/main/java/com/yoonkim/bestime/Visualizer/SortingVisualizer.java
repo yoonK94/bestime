@@ -11,7 +11,7 @@ import com.yoonkim.bestime.R;
 
 /*
     Implementation used for Algorithm final project.
-    Please reference https://github.com/yoonK94/sorting.show for more information
+    Please refer to https://github.com/yoonK94/sorting.show for more information
  */
 
 public class SortingVisualizer extends AlgorithmVisualizer {
@@ -27,9 +27,6 @@ public class SortingVisualizer extends AlgorithmVisualizer {
 
     int highlightPositionOne = -1, highlightPositionTwo = -1;
     int highlightPosition = -1;
-    int highlightPositionPivot = -1; // for pivot in TimSort
-    int highlightPositionDestination = -1; // for destination in TimSort
-    int[] highlightPositionShift = new int[]{-1}; // for shift in TimSort
     int lineStrokeWidth = getDimensionInPixel(10);
 
     public SortingVisualizer(Context context) {
@@ -82,7 +79,9 @@ public class SortingVisualizer extends AlgorithmVisualizer {
 
             float margin = (getWidth() - (margins * numberOfLines)) / (numberOfLines + 1);
 
-            float xPos = margin + getDimensionInPixel(10);
+            float xPos = margin + getDimensionInPixel(lineStrokeWidth) + 5;
+
+            //finding the cheapest price to highlight
             for(int i = 0; i <array.length;i++){
                 if(array[i] < min){
                     min = array[i];
@@ -92,15 +91,14 @@ public class SortingVisualizer extends AlgorithmVisualizer {
             for (int i = 0; i < array.length; i++) {
                 if (i == highlightPositionOne || i == highlightPositionTwo)
                     canvas.drawLine(xPos, getHeight() - (float) ((array[i] / zoom) * getHeight()), xPos, getHeight(), highlightPaintSwap);
-                else if (i == highlightPosition)
-                    canvas.drawLine(xPos, getHeight() - (float) ((array[i] / zoom) * getHeight()), xPos, getHeight(), highlightPaintTrace);
                 else {
                     canvas.drawLine(xPos, getHeight() - (float) ((array[i] / zoom) * getHeight()), xPos, getHeight(), paint);
                 }
 
-                canvas.drawText(labels[i] + " : $" + String.valueOf(array[i]), xPos - lineStrokeWidth / 3, getHeight() - (float) ((array[i] / zoom) * getHeight()) - 30, textPaint);
+                canvas.drawText(labels[i], xPos - lineStrokeWidth - margin / 5, getHeight() - (float) ((array[i] / zoom) * getHeight()) - 50, textPaint);
+                canvas.drawText("$" + String.valueOf(array[i]), xPos - lineStrokeWidth * 2, getHeight() - (float) ((array[i] / zoom) * getHeight()) - 10, textPaint);
 
-                xPos += margin + 30;
+                xPos += margin + lineStrokeWidth;
             }
         }
 
@@ -128,37 +126,6 @@ public class SortingVisualizer extends AlgorithmVisualizer {
         invalidate();
     }
 
-    // for pivot in TimSort
-    public void highlightPivot(int position) {
-        this.highlightPositionPivot = position;
-        highlightPositionDestination = -1;
-        highlightPosition = -1;
-        highlightPositionShift = new int[]{-1};
-        invalidate();
-    }
-
-    // for destination in TimSort
-    public void highlightDestination(int position) {
-        this.highlightPositionDestination = position;
-        invalidate();
-    }
-
-    // for shift in TimSort
-    public void highlightShift(int[] positions) {
-        this.highlightPositionShift = positions;
-        invalidate();
-    }
-
-
-    public void clearPositions() {
-        this.highlightPosition = -1;
-        this.highlightPositionShift = new int[]{-1}; // for shift in TimSort
-        this.highlightPositionPivot = -1; // for pivot in TimSort
-        this.highlightPositionDestination = -1; // for destination in TimSort
-        this.highlightPositionTwo = -1;
-        this.highlightPositionOne = -1;
-        invalidate();
-    }
 
     private boolean contains(int[] array, int index) {
         for(int i = 0; i < array.length; i++) {

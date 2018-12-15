@@ -2,9 +2,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center_vertical"
     android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_marginEnd="5dp">
 
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/grey_font"
+            app:borderWidth = "0dp"/>
+
+    </LinearLayout>
     <ImageButton
         android:id="@+id/iatabutton"
         android:layout_width="wrap_content"
@@ -29,5 +43,7 @@
         android:layout_gravity="center"
         android:background="@null"
         android:src="@drawable/databasebutton_final" />
+
+
 
 </LinearLayout>

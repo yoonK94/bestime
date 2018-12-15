@@ -3,4 +3,14 @@
     <string name="mapWelcome">Please pick an airport!</string>
     <string name="instructions">Click on the marker to view IATA code!</string>
     <string name="instructions2">  The cheapest deal is indicated in red</string>
+    <string name="instructionfab">
+        Thank you for using BesTime.\n
+        This app is intended for users to pick the best date to schedule their trip plan.
+        It will search recently purchased tickets from Travelpayouts partners and let users to compare
+        the daily cheapest prices of the desired route within the same month.\n\n
+        First, use the IATA SEARCH button to find the unique three letters assigned to the nearby airports for your origin and destination.\n\n
+        Then, use the TICKET SEARCH button to find the cheapest price of the day within your desired month.
+        Users can save and update their possible traveling date if any price is available for the date.\n\n
+        Meanwhile, use SAVED TICKETS button to view their previously saved button to compare or delete any record. To assist record comparing, the cheapest price is indicated in red color.
+    </string>
 </resources>

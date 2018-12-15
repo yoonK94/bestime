@@ -71,7 +71,7 @@
             android:layout_marginRight="7dp"
             android:layout_alignParentEnd="true"
             android:gravity="right"
-            android:text="Departing\nmonth"
+            android:text="Departing  \nmonth     "
             android:textColor="@android:color/white"
             android:textStyle="bold" />
 

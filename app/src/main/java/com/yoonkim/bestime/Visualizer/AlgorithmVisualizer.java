@@ -9,7 +9,7 @@ import android.view.View;
 
 /*
     Implementation used for Algorithm final project.
-    Please reference https://github.com/yoonK94/sorting.show for more information
+    Please refer to https://github.com/yoonK94/sorting.show for more information
  */
 
 
