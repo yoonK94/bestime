@@ -8,11 +8,12 @@
 
     <TextView
         android:id="@+id/dialog_title"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:fontFamily="sans-serif-medium"
-        android:textColor="@color/colorAccent"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/buttonText"
         android:textSize="22sp"
         android:textStyle="normal" />
 

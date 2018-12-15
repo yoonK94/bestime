@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="8dp">
 
     <TextView
         android:id="@+id/dialog_title"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:fontFamily="sans-serif-medium"
-        android:textColor="@color/colorPrimary"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/buttonText"
         android:textSize="22sp"
         android:textStyle="normal" />
 
@@ -19,13 +20,15 @@
         android:id="@+id/edt_origin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
         android:background="@android:color/transparent"
         android:fontFamily="sans-serif"
         android:gravity="top"
         android:hint="IATA code of departing city"
         android:inputType="textCapSentences|textMultiLine"
+        android:layout_marginBottom="5dp"
         android:maxLength="3"
-        android:lines="2"
+        android:lines="1"
         android:textColor="@android:color/black"
         android:textColorHint="@color/colorPrimaryDark"
         android:textSize="18sp" />
@@ -36,11 +39,13 @@
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         android:fontFamily="sans-serif"
+        android:layout_marginStart="20dp"
         android:gravity="top"
         android:hint="IATA code of arriving city"
+        android:layout_marginBottom="10dp"
         android:inputType="textCapSentences|textMultiLine"
         android:maxLength="3"
-        android:lines="2"
+        android:lines="1"
         android:textColor="@android:color/black"
         android:textColorHint="@color/colorPrimaryDark"
         android:textSize="18sp" />
@@ -53,8 +58,7 @@
             android:id="@+id/tv_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_marginLeft="8dp"
+            android:layout_marginLeft="25dp"
             android:fontFamily="sans-serif"
             android:textColor="@android:color/black"
             android:textSize="18sp" />
@@ -63,8 +67,10 @@
             android:id="@+id/btn_setdate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
             android:background="@color/colorPrimary"
+            android:layout_marginRight="7dp"
+            android:layout_alignParentEnd="true"
+            android:gravity="right"
             android:text="Departing\nmonth"
             android:textColor="@android:color/white"
             android:textStyle="bold" />

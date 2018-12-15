@@ -2,6 +2,7 @@ package com.yoonkim.bestime;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -13,7 +14,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -25,24 +25,26 @@ import com.yoonkim.bestime.City.Airport;
 import com.yoonkim.bestime.City.CityHttpClient;
 import com.yoonkim.bestime.City.CityJSONParser;
 import com.yoonkim.bestime.Map.MapActivity;
+import com.yoonkim.bestime.Room.DatabaseActivity;
+import com.yoonkim.bestime.Room.OnDbClickListener;
 import com.yoonkim.bestime.Room.SavedTicket;
 import com.yoonkim.bestime.Room.SavedTicketDatabase;
 import com.yoonkim.bestime.Room.databaseAdapter;
-import com.yoonkim.bestime.Ticket.ForAlert;
+import com.yoonkim.bestime.Ticket.ticketGroup;
 import com.yoonkim.bestime.Ticket.HttpClient;
 import com.yoonkim.bestime.Ticket.JSONParser;
 import com.yoonkim.bestime.Ticket.MonthYearPickerDialog;
 import com.yoonkim.bestime.Ticket.Schedule;
 import com.yoonkim.bestime.Ticket.TicketActivity;
-import com.yoonkim.bestime.Ticket.ticketAdapter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnDbClickListener {
 
     private ImageButton iata;
     private ImageButton ticket;
@@ -93,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         final EditText edt_title = (EditText) view.findViewById(R.id.edt_title);
 
 
-        dialog_title.setText("IATA Search");
+        dialog_title.setText("  IATA Search");
 
 
         alertDialogBuilderUserInput
@@ -204,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        dialog_title.setText("Ticket Search");
+        dialog_title.setText("  Ticket Search");
 
         alertDialogBuilderUserInput
                 .setCancelable(false)
@@ -308,7 +310,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void showDatabaseDialog() {
+    private void showDatabaseDialog(List<ticketGroup> tgList) {
 
         LayoutInflater layoutInflater = LayoutInflater.from(getApplicationContext());
         View view = layoutInflater.inflate(R.layout.database_dialog, null);
@@ -318,13 +320,14 @@ public class MainActivity extends AppCompatActivity {
 
         AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(this);
         alertDialogBuilderUserInput.setView(view);
-        databaseAdapter adapter = new databaseAdapter(stList, getApplicationContext());
+        OnDbClickListener dbClickListener = (OnDbClickListener) new MainActivity();
+        databaseAdapter adapter = new databaseAdapter(tgList, getApplicationContext(), dbClickListener);
 
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(adapter);
 
-        dialog_title.setText("Saved Tickets");
+        dialog_title.setText("  Saved Tickets");
 
 
         alertDialogBuilderUserInput
@@ -361,10 +364,42 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(List<SavedTicket> tickets) {
             super.onPostExecute(tickets);
             stList = tickets;
-            showDatabaseDialog();
+            List<ticketGroup> tg = sortTickets(stList);
+            showDatabaseDialog(tg);
         }
     }
 
+    private List<ticketGroup> sortTickets(List<SavedTicket> tickets){
+        Iterator<SavedTicket> it = tickets.iterator();
+        List<ticketGroup> tgList = new ArrayList<ticketGroup>();
+        boolean exist = false;
+        while(it.hasNext()){
+            SavedTicket t = it.next();
+            exist = false;
+            for(int i = 0; i < tgList.size(); i++){
+                ticketGroup temp = tgList.get(i);
+                if(temp.getOrigin().equals(t.getOrigin()) && temp.getDestination().equals(t.getDestination())){
+                    temp.getTickets().add(t);
+                    exist = true;
+                }
+            }
+            if(!exist){
+                ticketGroup tg = new ticketGroup(t.getOrigin(), t.getDestination());
+                tg.getTickets().add(t);
+                tgList.add(tg);
+            }
+        }
+        return tgList;
+    }
+
+    public void onDbClick(ticketGroup item, Context context) {
+        Intent db =new Intent (context, DatabaseActivity.class);
+        db.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Bundle myData = new Bundle();
+        myData.putSerializable("tickets", (ArrayList<SavedTicket>)item.getTickets());
+        db.putExtras(myData);
+        context.startActivity(db);
+    }
 }
 
 

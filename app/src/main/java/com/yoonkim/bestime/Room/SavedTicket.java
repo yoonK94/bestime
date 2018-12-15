@@ -5,11 +5,13 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 
+import java.io.Serializable;
+
 import static com.yoonkim.bestime.Room.SavedTicket.TABLE_NAME;
 
 
 @Entity(tableName = TABLE_NAME)
-public class SavedTicket {
+public class SavedTicket implements Serializable {
     public static final String TABLE_NAME = "savedtickets";
 
     @PrimaryKey(autoGenerate = true)

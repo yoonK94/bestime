@@ -1,12 +1,19 @@
-package com.yoonkim.bestime.Room;
+package com.yoonkim.bestime.Ticket;
 
+import android.arch.lifecycle.ViewModel;
+import android.content.Context;
+
+import com.yoonkim.bestime.Room.SavedTicket;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ticketGroup {
+public class ticketGroup implements Serializable {
     private String origin;
     private String destination;
     List<SavedTicket> tickets;
+
 
     public ticketGroup(String origin, String destination){
         this.origin = origin;

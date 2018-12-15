@@ -94,8 +94,8 @@ public class ticketAdapter extends RecyclerView.Adapter<ticketAdapter.TicketView
         holder.saveButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 Schedule item = items.get(position);
-                new DatabaseAsync().execute(true, -3, item.getOrigin(), item.getDest(), item.getDepart(), item.getPrice());
-                Toast.makeText(context, "Please wait", Toast.LENGTH_SHORT).show();
+                new DatabaseAsync().execute(true, -3, item.getOrigin(), item.getDest(), item.getDepart(), item.getPrice(), null);
+                Toast.makeText(context, "Please wait until I find a possible duplicate", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -169,7 +169,7 @@ public class ticketAdapter extends RecyclerView.Adapter<ticketAdapter.TicketView
         TextView dialog_old = (TextView) view.findViewById(R.id.dialog_old);
         TextView dialog_new = (TextView) view.findViewById(R.id.dialog_new);
 
-        dialog_title.setText("Ticket already exists");
+        dialog_title.setText("  Ticket already exists");
         dialog_body.setText("The ticket from " + st.getOrigin() + " to " + st.getDestination() + " already exists.\nWould you want to update the ticket?");
         dialog_old.setText("Original Price = " + st.getPrice());
         dialog_new.setText("New Price = " + price);
@@ -196,7 +196,7 @@ public class ticketAdapter extends RecyclerView.Adapter<ticketAdapter.TicketView
             @Override
             public void onClick(View v) {
                 alertDialog.dismiss();
-                new DatabaseAsync().execute(false, st.getId(), null, null, null, price);
+                new DatabaseAsync().execute(false, st.getId(), null, null, null, price, st);
             }
         });
     }
@@ -216,6 +216,7 @@ public class ticketAdapter extends RecyclerView.Adapter<ticketAdapter.TicketView
             String destination = (String) params[3];
             String date = (String) params[4];
             int price = (int) params[5];
+            SavedTicket ticket = (SavedTicket) params[6];
 
             //check whether to search a SavedTicket based on if shouldSearch is true
             if(shouldSearch){
@@ -227,7 +228,7 @@ public class ticketAdapter extends RecyclerView.Adapter<ticketAdapter.TicketView
                     return fa;
                 }
                 else{
-                    SavedTicket ticket = new SavedTicket();
+                    ticket = new SavedTicket();
                     ticket.setOrigin(origin);
                     ticket.setDestination(destination);
                     ticket.setPrice(price);
@@ -237,8 +238,6 @@ public class ticketAdapter extends RecyclerView.Adapter<ticketAdapter.TicketView
             }
             //savedSearch == false indicates that existing ticket should be updated
             else {
-                //auto increment starts from index 1 not zero
-                SavedTicket ticket = SavedTicketDatabase.getSavedTicketDatabase(context).savedTicketDao().getSavedTickets().get(position - 1);
                 ticket.setPrice(price);
                 SavedTicketDatabase.getSavedTicketDatabase(context).savedTicketDao().updateSavedTicket(ticket);
             }
@@ -252,6 +251,7 @@ public class ticketAdapter extends RecyclerView.Adapter<ticketAdapter.TicketView
             if(toConfirm != null){
                 showUpdateDialog(toConfirm.getSc(), toConfirm.getPrice());
             }
+            Toast.makeText(context, "Ticket successfully added/updated to database", Toast.LENGTH_SHORT).show();
         }
     }
 }
