@@ -417,15 +417,16 @@ public class MainActivity extends AppCompatActivity implements OnDbClickListener
         while(it.hasNext()){
             SavedTicket t = it.next();
             exist = false;
+            String YearMonth = t.getDate().substring(0, 7);
             for(int i = 0; i < tgList.size(); i++){
                 ticketGroup temp = tgList.get(i);
-                if(temp.getOrigin().equals(t.getOrigin()) && temp.getDestination().equals(t.getDestination())){
+                if(temp.getOrigin().equals(t.getOrigin()) && temp.getDestination().equals(t.getDestination()) && temp.getMonth().equals(YearMonth)){
                     temp.getTickets().add(t);
                     exist = true;
                 }
             }
             if(!exist){
-                ticketGroup tg = new ticketGroup(t.getOrigin(), t.getDestination());
+                ticketGroup tg = new ticketGroup(t.getOrigin(), t.getDestination(), YearMonth);
                 tg.getTickets().add(t);
                 tgList.add(tg);
             }
@@ -441,6 +442,7 @@ public class MainActivity extends AppCompatActivity implements OnDbClickListener
         db.putExtras(myData);
         context.startActivity(db);
     }
+
 }
 
 

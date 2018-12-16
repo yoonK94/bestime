@@ -46,11 +46,13 @@ public class databaseAdapter extends RecyclerView.Adapter<databaseAdapter.Databa
         TextView destinationTextView;
         TextView show;
         TextView manage;
+        TextView month;
 
         DatabaseViewHolder(View v) {
             super(v);
             originTextView = (TextView) v.findViewById(R.id.tv_origin);
             destinationTextView = (TextView) v.findViewById(R.id.tv_dest);
+            month = (TextView) v.findViewById(R.id.tv_detail);
             show = (TextView) v.findViewById(R.id.show);
             manage = (TextView) v.findViewById(R.id.manage);
 
@@ -85,6 +87,7 @@ public class databaseAdapter extends RecyclerView.Adapter<databaseAdapter.Databa
         holder.destinationTextView.setText(item.getDestination().toUpperCase());
         holder.show.setText(" Show ");
         holder.manage.setText(" Manage ");
+        holder.month.setText(item.getMonthToPrint());
 
 
         holder.show.setOnClickListener(new View.OnClickListener(){

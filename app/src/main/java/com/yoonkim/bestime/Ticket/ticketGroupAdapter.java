@@ -22,7 +22,7 @@ import java.util.List;
 public class ticketGroupAdapter extends RecyclerView.Adapter<ticketGroupAdapter.ticketGroupViewHolder>{
     private Context context;
     private List<SavedTicket> items;
-    private databaseAdapter.ClickListener mClickListener;
+    private ClickListener mClickListener;
     private List<databaseAdapter> adapters;
 
     public ticketGroupAdapter(List<SavedTicket> items, Context context) {
@@ -87,7 +87,7 @@ public class ticketGroupAdapter extends RecyclerView.Adapter<ticketGroupAdapter.
         return items.size();
     }
     // allows clicks events to be caught
-    void setClickListener(databaseAdapter.ClickListener itemClickListener) {
+    void setClickListener(ClickListener itemClickListener) {
         this.mClickListener = itemClickListener;
     }
     public interface ClickListener {

@@ -19,6 +19,7 @@ public class VisualizerActivity extends AppCompatActivity {
 
     AppBarLayout abl;
     TextView title;
+    TextView instruction;
     List<SavedTicket> stList;
 
     @Override
@@ -49,11 +50,12 @@ public class VisualizerActivity extends AppCompatActivity {
 
         title = (TextView) findViewById(R.id.dialog_title);
         abl = (AppBarLayout) findViewById(R.id.app_bar);
+        instruction = (TextView) findViewById(R.id.instructions);
 
         title.setText(text);
 
         SortingVisualizer visualizer = new SortingVisualizer(getApplicationContext());
-        visualizer.setZoom(5000);
+        visualizer.setZoom(1000);
         visualizer.setFontSize(15);
         int[] data = new int[stList.size()];
         String[] labels = new String[stList.size()];

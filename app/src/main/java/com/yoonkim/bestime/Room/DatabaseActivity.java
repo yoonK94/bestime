@@ -19,6 +19,7 @@ public class DatabaseActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     ticketGroupAdapter adapter;
     List<SavedTicket> stList;
+    databaseAdapter parentAdapter;
 
 
     @Override
@@ -30,6 +31,7 @@ public class DatabaseActivity extends AppCompatActivity {
         Intent arts = getIntent();
         Bundle bundle = arts.getExtras();
         stList = (List<SavedTicket>) bundle.getSerializable("tickets");
+
 
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view_list_events);

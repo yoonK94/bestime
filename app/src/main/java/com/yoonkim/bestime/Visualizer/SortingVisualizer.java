@@ -22,7 +22,7 @@ public class SortingVisualizer extends AlgorithmVisualizer {
     Paint textPaint;
     int[] array;
     String[] labels;
-    double zoom = 5000;
+    double zoom = 3000;
     int margins = 30;
 
     int highlightPositionOne = -1, highlightPositionTwo = -1;
